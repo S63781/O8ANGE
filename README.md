@@ -47,7 +47,7 @@ A cloud based remote android managment suite, powered by NodeJS
 
 6. Run server `node index.js`
 
-7. Easy Run Process : Open Folder -> Go to Server Folder -> Open Git Bash Terminal -> Write `npm install pm2 -g` -> Then write `npm install` -> Then write `pm2 start index.js` -> Go to your browser and ttype : `http://127.0.0.1:22533`
+7. Easy Run Process : Open Folder -> Go to Server Folder -> Open Git Bash Terminal -> Write `npm install pm2 -g` -> Then write `npm install` -> You can see a file called `maindb.json` is created -> Go to that file and open it -> where the password section there will be blank. You have to input md5 hash file of your password [To generate md5 hash of your password go to `https://www.md5hashgenerator.com` and generate md5 hash and coppy it then paste it in the password section of `maindb.json` -> Then write `pm2 start index.js` -> Go to your browser and type : `http://127.0.0.1:22533`
 
 9. In your browser navigate to `http://<SERVER IP>:22533` & Login with default username and password ( By default server will run on localhost and to make a client APP you can use [PORTMAP](https://portmap.io) to access APP on wide area network , check below for demo to setup O8ANGE with PORTMAP.)
 
