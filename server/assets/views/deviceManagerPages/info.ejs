@@ -1,0 +1,121 @@
+<div class="ui segment cyber-widgets">
+    <div class="statistic">
+        <div class="text value" id="clock"></div>
+        <div class="label">Current Time</div>
+    </div>
+    <div class="statistic">
+        <div class="text value" id="cpuUsage">Loading...</div>
+        <div class="label">CPU Usage</div>
+    </div>
+    <div class="statistic">
+        <div class="text value" id="networkSpeed">Checking...</div>
+        <div class="label">Network Speed</div>
+    </div>
+    <div class="statistic">
+        <div class="text value" id="batteryStatus">Checking...</div>
+        <div class="label">Battery Status</div>
+    </div>
+</div>
+
+<style>
+    /* Reuse cyberpunk theme variables */
+    :root {
+        --orange-primary: #FF6B2B;
+        --orange-light: #FF8F5C;
+        --orange-dark: #CC4A15;
+        --cyber-black: #0A0A0A;
+        --cyber-dark: #151515;
+        --cyber-gray: #1E1E1E;
+        --neon-orange: #FF4D00;
+        --neon-blue: #00F0FF;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --orange-glow: 0 0 10px var(--orange-primary),
+                      0 0 20px rgba(255, 107, 43, 0.5),
+                      0 0 40px rgba(255, 107, 43, 0.3);
+        --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    .cyber-widgets {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        text-align: center;
+        background: var(--cyber-dark) !important;
+        padding: 1.5rem;
+        border: 2px solid var(--orange-primary);
+        border-radius: 8px;
+    }
+
+    .cyber-widgets .statistic {
+        color: var(--text-primary) !important;
+        font-family: var(--font-mono);
+        padding: var(--space-sm);
+        border: 2px solid var(--orange-primary);
+        border-radius: 8px;
+        min-width: 120px;
+        transition: all 0.3s ease;
+        background: var(--cyber-gray);
+    }
+
+    .cyber-widgets .statistic:hover {
+        box-shadow: var(--orange-glow);
+        transform: translateY(-2px);
+        background: var(--orange-dark);
+    }
+
+    .cyber-widgets .text.value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: var(--text-primary) !important;
+        text-shadow: var(--orange-glow);
+    }
+
+    .cyber-widgets .label {
+        font-size: 0.9em;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+    }
+</style>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById("clock").innerHTML = now.toLocaleTimeString();
+    }
+
+    function updateCPUUsage() {
+        if (navigator.hardwareConcurrency) {
+            let usage = Math.floor(Math.random() * 100); // Simulated CPU usage
+            document.getElementById("cpuUsage").innerHTML = usage + "%";
+        } else {
+            document.getElementById("cpuUsage").innerHTML = "N/A";
+        }
+    }
+
+    function updateNetworkSpeed() {
+        let speed = (Math.random() * 100).toFixed(2); // Simulated Network Speed
+        document.getElementById("networkSpeed").innerHTML = speed + " Mbps";
+    }
+
+    function updateBatteryStatus() {
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                let level = Math.floor(battery.level * 100) + "%";
+                document.getElementById("batteryStatus").innerHTML = level;
+            });
+        } else {
+            document.getElementById("batteryStatus").innerHTML = "N/A";
+        }
+    }
+
+    setInterval(updateClock, 1000);
+    setInterval(updateCPUUsage, 5000);
+    setInterval(updateNetworkSpeed, 7000);
+    setInterval(updateBatteryStatus, 10000);
+
+    updateClock();
+    updateCPUUsage();
+    updateNetworkSpeed();
+    updateBatteryStatus();
+</script>

@@ -1,0 +1,72 @@
+<style>
+    :root {
+        --orange-primary: #FF6B2B;
+        --orange-light: #FF8F5C;
+        --orange-dark: #CC4A15;
+        --cyber-black: #0A0A0A;
+        --cyber-dark: #151515;
+        --cyber-gray: #1E1E1E;
+        --neon-orange: #FF4D00;
+        --neon-blue: #00F0FF;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --orange-glow: 0 0 10px var(--orange-primary),
+                      0 0 20px rgba(255, 107, 43, 0.5),
+                      0 0 40px rgba(255, 107, 43, 0.3);
+        --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    .ui.button {
+        background: var(--orange-primary) !important;
+        color: var(--text-primary) !important;
+        font-family: var(--font-mono) !important;
+        border: 2px solid var(--orange-primary) !important;
+        box-shadow: var(--orange-glow);
+        transition: all 0.3s ease;
+    }
+
+    .ui.button:hover {
+        background: var(--orange-light) !important;
+        transform: translateY(-2px);
+    }
+
+    .ui.celled.table {
+        background: var(--cyber-gray);
+        border-color: var(--orange-primary);
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+    }
+
+    .ui.celled.table th {
+        background: var(--cyber-dark);
+        color: var(--orange-primary);
+    }
+
+    .ui.celled.table td {
+        border-color: rgba(255, 107, 43, 0.3);
+    }
+</style>
+
+<div class="ui segment" style="background: var(--cyber-dark); border: 2px solid var(--orange-primary); border-radius: 8px;">
+    <div class="ui secondary menu">
+        <div class="right menu">
+            <button onclick="updateButton(this, '0xPM')" class="ui blue button" style="background: var(--orange-gradient) !important; color: var(--text-primary) !important; font-family: var(--font-mono) !important; border: var(--border-sm) solid var(--orange-primary) !important; box-shadow: var(--orange-glow); transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                <i class="icon sync"></i>Update
+            </button>
+        </div>
+    </div>
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% pageData.forEach((permission) => { %>
+            <tr>
+                <td><%= permission %></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>

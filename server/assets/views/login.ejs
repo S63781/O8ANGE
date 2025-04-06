@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<% include partials/head.ejs %>
+<body>
+    <style type="text/css">
+        :root {
+            --orange-primary: #FF6B2B;
+            --orange-light: #FF8F5C;
+            --orange-dark: #CC4A15;
+            --cyber-black: #0A0A0A;
+            --cyber-dark: #151515;
+            --cyber-gray: #1E1E1E;
+            --neon-orange: #FF4D00;
+            --neon-blue: #00F0FF;
+            --neon-purple: #9D00FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --orange-glow: 0 0 10px var(--orange-primary),
+                          0 0 20px rgba(255, 107, 43, 0.5),
+                          0 0 40px rgba(255, 107, 43, 0.3);
+            --blue-glow: 0 0 10px var(--neon-blue),
+                        0 0 20px rgba(0, 240, 255, 0.5);
+            --purple-glow: 0 0 10px var(--neon-purple),
+                          0 0 20px rgba(157, 0, 255, 0.5);
+            --orange-gradient: linear-gradient(135deg,
+                var(--orange-primary),
+                var(--neon-orange)
+            );
+            --cyber-gradient: linear-gradient(
+                45deg,
+                var(--cyber-black),
+                var(--cyber-dark),
+                var(--cyber-gray)
+            );
+            --font-primary: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            --border-sm: 2px;
+            --border-md: 4px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--cyber-black);
+            color: var(--text-primary);
+            font-family: var(--font-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--orange-primary) 1px, transparent 1px),
+                linear-gradient(90deg, var(--orange-primary) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: -1px -1px;
+            opacity: 0.05;
+            transform: perspective(1000px) rotateX(60deg);
+            transform-origin: center top;
+        }
+
+        .data-stream {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 3px,
+                rgba(255, 107, 43, 0.1) 3px,
+                rgba(255, 107, 43, 0.1) 4px
+            );
+            opacity: 0.1;
+            animation: dataFlow 20s linear infinite, lightFlicker 7s infinite alternate;
+        }
+
+        .o8range-container {
+            width: 90%;
+            max-width: 1200px;
+            min-height: 600px;
+            background: var(--cyber-gradient);
+            border-radius: var(--radius-lg);
+            border: var(--border-sm) solid var(--orange-primary);
+            box-shadow: var(--orange-glow);
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: smoothFade 0.8s ease-out forwards;
+        }
+
+        .brand-info {
+            flex: 1;
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-logo {
+            font-family: var(--font-mono);
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: var(--orange-primary);
+            text-shadow: var(--orange-glow);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            letter-spacing: 8px;
+            text-align: center;
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        .brand-logo::before {
+            content: 'O8RANGE';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: var(--orange-primary);
+            filter: blur(15px);
+            opacity: 0.5;
+            animation: textPulse 3s ease-in-out infinite;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 107, 43, 0.3) 0%,
+                transparent 70%
+            );
+            z-index: -1;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        .brand-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background: var(--cyber-dark);
+            border: var(--border-sm) solid var(--orange-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            animation: smoothFade 0.6s ease-out forwards;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--orange-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--orange-glow);
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            color: var(--orange-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: lightFlicker 2s infinite;
+        }
+
+        .feature-title {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .login-panel {
+            flex: 1;
+            padding: var(--space-xl);
+            background-color: rgba(21, 21, 21, 0.7);
+            backdrop-filter: blur(10px);
+            border: var(--border-sm) solid var(--orange-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: auto;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--orange-glow);
+        }
+
+        .ui.black.inverted.stacked.segment {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .ui.left.icon.input {
+            width: 100%;
+        }
+
+        .ui.left.icon.input input {
+            background: rgba(30, 30, 30, 0.8) !important;
+            border: var(--border-sm) solid var(--orange-primary) !important;
+            color: var(--text-primary) !important;
+            font-family: var(--font-mono) !important;
+            transition: all 0.3s ease;
+        }
+
+        .ui.left.icon.input input:focus {
+            border-color: var(--neon-blue) !important;
+            box-shadow: var(--blue-glow) !important;
+        }
+
+        .ui.left.icon.input i.icon {
+            color: var(--orange-primary);
+        }
+
+        .ui.fluid.large.teal.submit.button {
+            background: var(--orange-gradient) !important;
+            color: var(--text-primary) !important;
+            font-family: var(--font-mono) !important;
+            border: none !important;
+            margin-top: var(--space-md);
+            transition: all 0.3s ease;
+        }
+
+        .ui.fluid.large.teal.submit.button:hover {
+            box-shadow: var(--orange-glow) !important;
+            transform: translateY(-2px);
+        }
+
+        .ui.error.message {
+            background: rgba(255, 77, 0, 0.1) !important;
+            border: 1px solid var(--orange-primary) !important;
+            color: var(--orange-primary) !important;
+            font-family: var(--font-mono) !important;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .login-title {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            color: var(--orange-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--cyber-gray);
+            border: var(--border-sm) solid var(--orange-primary);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm) var(--space-md);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: var(--blue-glow);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .login-button {
+            background: var(--orange-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            animation: lightFlicker 3s infinite alternate;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .login-button:hover {
+            box-shadow: var(--orange-glow);
+            transform: translateY(-2px);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .error-message {
+            color: var(--orange-primary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--cyber-gradient);
+            border-top: var(--border-sm) solid var(--orange-primary);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--orange-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--orange-primary);
+            text-shadow: var(--orange-glow);
+        }
+
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        .footer-brand {
+            color: var(--orange-primary);
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        @keyframes dataFlow {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes lightFlicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+            }
+            20%, 22%, 24%, 55% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes smoothFade {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes textGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px var(--orange-primary),
+                           0 0 20px var(--orange-primary),
+                           0 0 30px var(--orange-primary);
+            }
+            50% {
+                text-shadow: 0 0 20px var(--orange-primary),
+                           0 0 40px var(--orange-primary),
+                           0 0 60px var(--orange-primary);
+            }
+        }
+
+        @keyframes textPulse {
+            0%, 100% {
+                opacity: 0.5;
+                filter: blur(15px);
+            }
+            50% {
+                opacity: 0.8;
+                filter: blur(20px);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1.3);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .o8range-container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .brand-info {
+                padding: var(--space-md);
+            }
+
+            .brand-features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .o8range-container {
+                padding: var(--space-md);
+            }
+
+            .brand-logo {
+                font-size: 2rem;
+            }
+
+            .login-panel {
+                padding: var(--space-md);
+            }
+        }
+
+        .error-container {
+            margin: var(--space-md) 0;
+            animation: smoothFade 0.3s ease;
+        }
+
+        .error-message {
+            background: rgba(255, 77, 0, 0.1);
+            border: 1px solid var(--error);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            color: var(--error);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .error-message i {
+            font-size: 1.1rem;
+        }
+
+        .button-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loader-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-button {
+            position: relative;
+        }
+
+        .login-button.loading .button-text {
+            visibility: hidden;
+        }
+
+        .login-button.loading .button-loader {
+            display: block !important;
+        }
+
+        .form-input:invalid {
+            border-color: var(--error);
+        }
+
+        .form-input:valid {
+            border-color: var(--success);
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <div class="cyber-grid"></div>
+    <div class="data-stream"></div>
+
+    <div class="o8range-container">
+        <div class="brand-info">
+            <div class="brand-logo">O8ANGE</div>
+            <div class="brand-features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">QUANTUM SECURITY</h3>
+                    <p class="feature-desc">Advanced encryption protocols</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3 class="feature-title">NEURAL ENGINE</h3>
+                    <p class="feature-desc">AI-powered processing core</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="feature-title">MESH NETWORK</h3>
+                    <p class="feature-desc">Decentralized infrastructure</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3 class="feature-title">QUANTUM CORE</h3>
+                    <p class="feature-desc">Next-gen computing power</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-panel">
+            <div class="login-header">
+                <h1 class="login-title">SYSTEM LOGIN</h1>
+                <p class="login-subtitle">Enter your credentials to access O8ANGE</p>
+            </div>
+            
+            <% 
+            let errorMessage = '';
+            if (typeof query !== 'undefined' && query.e) {
+                switch(query.e) {
+                    case 'badLogin':
+                        errorMessage = 'Invalid username or password';
+                        break;
+                    case 'missingFields':
+                        errorMessage = 'Please fill in all fields';
+                        break;
+                    case 'serverError':
+                        errorMessage = 'Server error occurred. Please try again';
+                        break;
+                }
+            }
+            %>
+            
+            <% if (errorMessage) { %>
+                <div class="error-message" style="color: var(--error); text-align: center; margin-bottom: var(--space-md); font-family: var(--font-mono); padding: var(--space-sm); background: rgba(255, 77, 0, 0.1); border-radius: var(--radius-sm);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <%= errorMessage %>
+                </div>
+            <% } %>
+
+            <form action="/login" method="POST" class="login-form">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" name="username" class="form-input" placeholder="Username" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" class="form-input" placeholder="Password" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-button">
+                    <span class="button-text">Login</span>
+                    <div class="button-loader">
+                        <div class="loader"></div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.ui.form').form({
+                fields: {
+                    email: {
+                        identifier: 'username',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: 'Please enter your username'
+                            }
+                        ]
+                    },
+                    password: {
+                        identifier: 'password',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: 'Please enter your password'
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <%- include('partials/footer.ejs') %>
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>O8ANGE Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Cyberpunk Design System */
+        :root {
+            --orange-primary: #FF6B2B;
+            --orange-light: #FF8F5C;
+            --orange-dark: #CC4A15;
+            --cyber-black: #0A0A0A;
+            --cyber-dark: #151515;
+            --cyber-gray: #1E1E1E;
+            --neon-orange: #FF4D00;
+            --neon-blue: #00F0FF;
+            --neon-purple: #9D00FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --success: #00F0FF;
+            --error: #FF4D00;
+            --orange-glow: 0 0 10px var(--orange-primary),
+                          0 0 20px rgba(255, 107, 43, 0.5),
+                          0 0 40px rgba(255, 107, 43, 0.3);
+            --blue-glow: 0 0 10px var(--neon-blue),
+                        0 0 20px rgba(0, 240, 255, 0.5);
+            --orange-gradient: linear-gradient(135deg,
+                var(--orange-primary),
+                var(--neon-orange)
+            );
+            --cyber-gradient: linear-gradient(
+                45deg,
+                var(--cyber-black),
+                var(--cyber-dark),
+                var(--cyber-gray)
+            );
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --font-primary: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --grid-size: 50px;
+            --grid-color: rgba(255,107,43,0.1);
+            --grid-line: 1px;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+                          0 1px 3px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1),
+                               0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--cyber-black);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, var(--grid-color) var(--grid-line), 
+                transparent var(--grid-line)),
+                linear-gradient(to bottom, var(--grid-color) var(--grid-line), 
+                transparent var(--grid-line));
+            background-size: var(--grid-size) var(--grid-size);
+            z-index: 0;
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(var(--grid-size)); }
+        }
+
+        .data-stream {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,107,43,0.05) 50%,
+                transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+            animation: dataStream 3s ease-in-out infinite;
+        }
+
+        @keyframes dataStream {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .sidebar {
+            background: var(--cyber-dark);
+            border-right: 1px solid rgba(255, 107, 43, 0.2);
+            padding: var(--space-lg);
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu {
+            margin-top: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--orange-primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 107, 43, 0.1);
+            color: var(--orange-primary);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid rgba(255, 107, 43, 0.2);
+        }
+
+        .brand-logo {
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--orange-primary);
+            text-shadow: var(--orange-glow);
+        }
+
+        .dashboard-container {
+            margin-left: 250px;
+            padding: var(--space-lg);
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            padding: var(--space-md);
+            background: var(--cyber-dark);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,107,43,0.2);
+        }
+
+        .clients-section {
+            background: var(--cyber-dark);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            border: 1px solid rgba(255,107,43,0.2);
+            position: relative;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .clients-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--orange-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .clients-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .clients-section:hover::before {
+            opacity: 1;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid rgba(255,107,43,0.2);
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--orange-gradient);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--orange-primary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-online {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-offline {
+            background: var(--error);
+            box-shadow: 0 0 10px var(--error);
+        }
+
+        .client-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .client-table th {
+            text-align: left;
+            padding: var(--space-sm);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            background: rgba(255,107,43,0.1);
+            border-bottom: 1px solid rgba(255,107,43,0.2);
+        }
+
+        .client-table td {
+            padding: var(--space-sm);
+            border-bottom: 1px solid rgba(255,107,43,0.1);
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .client-table tr:hover td {
+            background: rgba(255,107,43,0.05);
+            color: var(--text-primary);
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--orange-gradient);
+            color: var(--text-primary);
+            box-shadow: var(--orange-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--orange-primary),
+                       0 0 40px rgba(255, 107, 43, 0.5);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--text-muted);
+            border-top-color: var(--orange-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 10px var(--orange-primary);
+        }
+
+        .error-toast {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--cyber-dark);
+            border: 1px solid var(--error);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            color: var(--error);
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.3);
+        }
+
+        .error-toast.show {
+            transform: translateY(0);
+            animation: errorPulse 2s infinite;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--orange-primary);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--orange-glow);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.9; }
+        }
+
+        @keyframes errorPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 77, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 77, 0, 0.5); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .dashboard-container {
+                margin-left: 0;
+                padding: var(--space-md);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .client-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cyber-grid"></div>
+    <div class="data-stream"></div>
+
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">O8ANGE</div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="/builder" class="nav-item">
+                <i class="fas fa-mobile-alt"></i>
+                APK Builder
+            </a>
+            <a href="/logs" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                Event Log
+            </a>
+        </nav>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="brand">
+                <div class="brand-logo">Dashboard</div>
+            </div>
+            <a href="/logout" class="btn btn-primary">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+
+        <div class="clients-section">
+            <div class="section-header">
+                <div class="status-indicator status-online"></div>
+                <h2 class="section-title">Online Clients</h2>
+            </div>
+            <div class="loading-overlay" id="onlineLoadingOverlay">
+                <div class="loading-spinner"></div>
+            </div>
+            <table class="client-table">
+                <thead>
+                    <tr>
+                        <th>Client ID</th>
+                        <th>IP Address</th>
+                        <th>Device</th>
+                        <th>Last Seen</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="onlineClientsBody">
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div class="empty-message">
+                                <i class="fas fa-users-slash"></i>
+                                Loading online clients...
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="clients-section">
+            <div class="section-header">
+                <div class="status-indicator status-offline"></div>
+                <h2 class="section-title">Offline Clients</h2>
+            </div>
+            <div class="loading-overlay" id="offlineLoadingOverlay">
+                <div class="loading-spinner"></div>
+            </div>
+            <table class="client-table">
+                <thead>
+                    <tr>
+                        <th>Client ID</th>
+                        <th>IP Address</th>
+                        <th>Device</th>
+                        <th>Last Seen</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offlineClientsBody">
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div class="empty-message">
+                                <i class="fas fa-users-slash"></i>
+                                Loading offline clients...
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="error-toast" id="errorToast">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage">An error occurred</span>
+    </div>
+
+    <!-- Keep all JavaScript functionality exactly the same -->
+    <script>
+        let refreshInterval = 300000;
+        let isRefreshing = false;
+        const errorToast = document.getElementById('errorToast');
+        const errorMessage = document.getElementById('errorMessage');
+        const onlineLoadingOverlay = document.getElementById('onlineLoadingOverlay');
+        const offlineLoadingOverlay = document.getElementById('offlineLoadingOverlay');
+        const onlineClientsBody = document.getElementById('onlineClientsBody');
+        const offlineClientsBody = document.getElementById('offlineClientsBody');
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorToast.classList.add('show');
+            setTimeout(() => {
+                errorToast.classList.remove('show');
+            }, 5000);
+        }
+
+        function formatLastSeen(date) {
+            const lastSeen = new Date(date);
+            const now = new Date();
+            const diffMs = now - lastSeen;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            return `${diffDays}d ago`;
+        }
+
+        function createClientRow(client) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${client.clientID}</td>
+                <td>${client.dynamicData.ipAddress || 'Unknown'}</td>
+                <td>${client.dynamicData.device || 'Unknown'}</td>
+                <td>${formatLastSeen(client.lastSeen)}</td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="/manage/${client.clientID}/info" class="btn btn-primary">
+                            <i class="fas fa-info-circle"></i>
+                            Info
+                        </a>
+                    </div>
+                </td>
+            `;
+            return row;
+        }
+
+        function updateClientTables(clientsOnline, clientsOffline) {
+            // Update online clients table
+            onlineClientsBody.innerHTML = '';
+            if (clientsOnline && clientsOnline.length > 0) {
+                clientsOnline.forEach(client => {
+                    onlineClientsBody.appendChild(createClientRow(client));
+                });
+            } else {
+                onlineClientsBody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div class="empty-message">
+                                <i class="fas fa-users-slash"></i>
+                                No online clients
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Update offline clients table
+            offlineClientsBody.innerHTML = '';
+            if (clientsOffline && clientsOffline.length > 0) {
+                clientsOffline.forEach(client => {
+                    offlineClientsBody.appendChild(createClientRow(client));
+                });
+            } else {
+                offlineClientsBody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div class="empty-message">
+                                <i class="fas fa-users-slash"></i>
+                                No offline clients
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Initialize tables with server-side rendered data
+        document.addEventListener('DOMContentLoaded', () => {
+            const clientsOnline = <%- JSON.stringify(clientsOnline || []) %>;
+            const clientsOffline = <%- JSON.stringify(clientsOffline || []) %>;
+            updateClientTables(clientsOnline, clientsOffline);
+        });
+
+        async function refreshDashboard() {
+            if (isRefreshing) return;
+            isRefreshing = true;
+
+            try {
+                onlineLoadingOverlay.style.display = 'flex';
+                offlineLoadingOverlay.style.display = 'flex';
+
+                const response = await fetch('/');
+                if (!response.ok) throw new Error('Failed to refresh dashboard');
+
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                // Extract client data from the response
+                const scriptContent = Array.from(doc.scripts)
+                    .find(script => script.textContent.includes('clientsOnline'))?.textContent;
+
+                if (scriptContent) {
+                    const match = scriptContent.match(/clientsOnline = (.*?);.*?clientsOffline = (.*?);/s);
+                    if (match) {
+                        const [, onlineJSON, offlineJSON] = match;
+                        const clientsOnline = JSON.parse(onlineJSON);
+                        const clientsOffline = JSON.parse(offlineJSON);
+                        updateClientTables(clientsOnline, clientsOffline);
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing dashboard:', error);
+                showError('Failed to refresh dashboard');
+            } finally {
+                onlineLoadingOverlay.style.display = 'none';
+                offlineLoadingOverlay.style.display = 'none';
+                isRefreshing = false;
+            }
+        }
+
+        function startRefreshCycle() {
+            refreshDashboard();
+            setInterval(refreshDashboard, refreshInterval);
+        }
+        
+        document.addEventListener('DOMContentLoaded', startRefreshCycle);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) refreshDashboard().catch(console.error);
+        });
+    </script>
+    <% include partials/footer.ejs %>
+</body>
+</html>

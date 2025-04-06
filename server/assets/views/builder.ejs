@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+
+<% include partials/head.ejs %>
+
+<body>
+    <style type="text/css">
+        :root {
+            --orange-primary: #FF6B2B;
+            --orange-light: #FF8F5C;
+            --orange-dark: #CC4A15;
+            --cyber-black: #0A0A0A;
+            --cyber-dark: #151515;
+            --cyber-gray: #1E1E1E;
+            --neon-orange: #FF4D00;
+            --neon-blue: #00F0FF;
+            --neon-purple: #9D00FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --success: #00F0FF;
+            --error: #FF4D00;
+            --orange-glow: 0 0 10px var(--orange-primary),
+                          0 0 20px rgba(255, 107, 43, 0.5),
+                          0 0 40px rgba(255, 107, 43, 0.3);
+            --blue-glow: 0 0 10px var(--neon-blue),
+                        0 0 20px rgba(0, 240, 255, 0.5);
+            --orange-gradient: linear-gradient(135deg,
+                var(--orange-primary),
+                var(--neon-orange)
+            );
+            --cyber-gradient: linear-gradient(
+                45deg,
+                var(--cyber-black),
+                var(--cyber-dark),
+                var(--cyber-gray)
+            );
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --font-primary: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--cyber-black);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(255,107,43,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,107,43,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .data-stream {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,107,43,0.05) 50%,
+                transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .sidebar {
+            background: var(--cyber-dark);
+            border-right: 1px solid rgba(255, 107, 43, 0.2);
+            padding: var(--space-lg);
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu {
+            margin-top: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 107, 43, 0.1);
+            color: var(--orange-primary);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .brand-logo {
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--orange-primary);
+            text-shadow: var(--orange-glow);
+        }
+
+        .dashboard-container {
+            margin-left: 250px;
+            padding: var(--space-lg);
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            padding: var(--space-md);
+            background: var(--cyber-dark);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,107,43,0.2);
+        }
+
+        .builder-section {
+            background: var(--cyber-dark);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            border: 1px solid rgba(255,107,43,0.2);
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+            width: 100%;
+        }
+
+        .form-group.input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .form-group.button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-xl);
+        }
+
+        .input-container {
+            display: flex;
+            gap: var(--space-sm);
+            width: 100%;
+        }
+
+        .input-container .form-input {
+            flex: 1;
+        }
+
+        .input-container .port-input {
+            width: 100px;
+            height: 46.09px;
+            min-width: 100px;
+            min-height: 46.09px;
+            padding: 12px var(--space-sm);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--cyber-gray);
+            border: 1px solid var(--orange-primary);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: var(--blue-glow);
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            width: 180px;
+            justify-content: center;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--orange-gradient);
+            color: var(--text-primary);
+            box-shadow: var(--orange-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--orange-primary),
+                       0 0 40px rgba(255, 107, 43, 0.5);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+            border-radius: var(--radius-lg);
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--text-muted);
+            border-top-color: var(--orange-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            text-align: center;
+        }
+
+        .error-toast {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--cyber-dark);
+            border: 1px solid var(--error);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            color: var(--error);
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .error-toast.show {
+            transform: translateY(0);
+        }
+
+        .download-btn {
+            background: var(--orange-gradient);
+            color: var(--text-primary);
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 180px;
+            justify-content: center;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--orange-glow);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--orange-primary);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .dashboard-container {
+                margin-left: 0;
+                padding: var(--space-md);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <div class="cyber-grid"></div>
+    <div class="data-stream"></div>
+
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">O8ANGE</div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="/builder" class="nav-item active">
+                <i class="fas fa-mobile-alt"></i>
+                APK Builder
+            </a>
+            <a href="/logs" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                Event Log
+            </a>
+        </nav>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="brand">
+                <div class="brand-logo">APK Builder</div>
+            </div>
+            <a href="/logout" class="btn btn-primary">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+
+        <div class="builder-section">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text" id="loadingText">Preparing Build</div>
+                    <div class="build-status" id="buildStatus"></div>
+                </div>
+            </div>
+
+            <h1 class="loading-text">APK Builder</h1>
+            
+            <div class="form-group input-group">
+                <label class="form-label">Server Connection</label>
+                <div class="input-container">
+                    <div class="url-prefix">http://</div>
+                    <input type="text" id="uriInput" class="form-input" 
+                           placeholder="IP / Public URL"
+                           title="This is the public url of your server (l3mon.domain.com)">
+                    <input type="number" id="portInput" class="form-input port-input" 
+                           placeholder="PORT" min="2048" max="25565"
+                           title="This is the `control_port` set in the consts" 
+                           value="<%= myPort %>">
+                </div>
+            </div>
+
+            <div class="form-group button-group">
+                <button id="gobuild" class="btn btn-primary">
+                    <i class="fas fa-wrench"></i>
+                    Build APK
+                </button>
+                <div id="download" class="download-container" style="display: none;">
+                    <a id="downloadBtn" class="download-btn" download="O8ANGE.apk" href="/build.s.apk">
+                        <i class="fas fa-download"></i>
+                        Download APK
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="error-toast" id="errorToast">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage">Build Error</span>
+    </div>
+
+    <script>
+        gtag('event', 'screen_view', {
+            'screen_name': 'apkBuilder',
+            'app_name': 'O8ANGE'
+        });
+
+        const buildStages = [
+            "Decompiling APK",
+            "Patching Server Information",
+            "Compiling APK",
+            "Signing APK",
+            "Verifying Build",
+            "Finalizing"
+        ];
+
+        let loadingIndex = 0;
+        let isDone = false;
+        let loadingTimeout = null;
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function showError(message) {
+            const errorToast = document.getElementById('errorToast');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorToast.classList.add('show');
+            setTimeout(() => {
+                errorToast.classList.remove('show');
+            }, 5000);
+        }
+
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            document.getElementById('buildStatus').className = 'build-status';
+            document.getElementById('buildStatus').textContent = '';
+            loadingIndex = 0;
+            updateLoaderText();
+        }
+
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'none';
+        }
+
+        function updateLoaderText() {
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = buildStages[loadingIndex];
+            loadingIndex++;
+            
+            if (loadingIndex < buildStages.length) {
+                const nextTimeout = Math.floor(Math.random() * 1500) + 700;
+                loadingTimeout = setTimeout(updateLoaderText, nextTimeout);
+            } else {
+                checkBuildCompletion();
+            }
+        }
+
+        function checkBuildCompletion() {
+                if (isDone) {
+                hideLoading();
+                document.getElementById('download').style.display = 'block';
+            } else {
+                setTimeout(checkBuildCompletion, 100);
+            }
+        }
+
+        function build(URI, PORT) {
+            gtag('event', 'build', {
+                'builduri': URI + ':' + PORT
+            });
+            
+            showLoading();
+            
+            fetch("/builder?uri=" + URI + "&port=" + PORT, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                isDone = true;
+            })
+            .catch(error => {
+                console.error('Build error:', error);
+                hideLoading();
+                showError(error.message || 'Build failed');
+            });
+        }
+
+        document.getElementById('gobuild').addEventListener('click', () => {
+            const uriInput = document.getElementById('uriInput');
+            const portInput = document.getElementById('portInput');
+            
+            if (!uriInput.value) {
+                showError('Please enter a server URL');
+                return;
+            }
+            
+            if (!portInput.value) {
+                showError('Please enter a port number');
+                return;
+            }
+
+            document.getElementById('download').style.display = 'none';
+            isDone = false;
+            
+            build(uriInput.value, portInput.value);
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            gtag('event', 'download', {
+                'event_category': 'APK',
+                'event_label': 'O8ANGE.apk'
+            });
+        });
+    </script>
+    <% include partials/footer.ejs %>
+</body>
+</html>

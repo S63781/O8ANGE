@@ -1,0 +1,160 @@
+<style>
+    :root {
+        --orange-primary: #FF6B2B;
+        --orange-light: #FF8F5C;
+        --orange-dark: #CC4A15;
+        --cyber-black: #0A0A0A;
+        --cyber-dark: #151515;
+        --cyber-gray: #1E1E1E;
+        --neon-orange: #FF4D00;
+        --neon-blue: #00F0FF;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --orange-glow: 0 0 10px var(--orange-primary),
+                      0 0 20px rgba(255, 107, 43, 0.5),
+                      0 0 40px rgba(255, 107, 43, 0.3);
+        --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    .ui.button {
+        background: var(--orange-primary) !important;
+        color: var(--text-primary) !important;
+        font-family: var(--font-mono) !important;
+        border: 2px solid var(--orange-primary) !important;
+        box-shadow: var(--orange-glow);
+        transition: all 0.3s ease;
+    }
+
+    .ui.button:hover {
+        background: var(--orange-light) !important;
+        transform: translateY(-2px);
+    }
+
+    .ui.celled.table {
+        background: var(--cyber-gray);
+        border-color: var(--orange-primary);
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+    }
+
+    .ui.celled.table th {
+        background: var(--cyber-dark);
+        color: var(--orange-primary);
+    }
+
+    .ui.celled.table td {
+        border-color: rgba(255, 107, 43, 0.3);
+    }
+
+    .ui.input input {
+        background: var(--cyber-gray);
+        color: var(--text-primary);
+        border: 2px solid var(--orange-primary);
+        font-family: var(--font-mono);
+    }
+
+    .ui.progress {
+        background: var(--cyber-gray);
+        border: 1px solid var(--orange-primary);
+    }
+
+    .ui.progress .bar {
+        background: var(--orange-primary);
+        box-shadow: var(--orange-glow);
+    }
+</style>
+
+<div class="ui segment" style="background: var(--cyber-dark); border: 2px solid var(--orange-primary); border-radius: 8px;">
+    <div>
+        <div class="ui action input fluid">
+            <input type="number" placeholder="Duration (seconds)" min="0" max="120" id="seconds">
+            <button onclick="record(this)" class="ui red left labeled icon button">
+                <i class="microphone icon"></i>
+                Record
+            </button>
+        </div>
+        <div class="ui attached progress indicating active" id="recProg">
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <audio id="player">
+        <source id="audioSource" src="" type="audio/mpeg">
+        </source>
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        function playClip(input) {
+            var player = document.getElementById('player');
+            $("#audioSource").attr("src", input);
+            player.load();
+            var playPromise = player.play();
+            if (playPromise !== undefined) playPromise.then(_ => { }).catch(error => { });
+        }
+
+    </script>
+
+
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% pageData.forEach((item) => { 
+                let date = new Date(item.time);
+            %>
+            <tr>
+                <td class="collapsing"><%= date.toLocaleString('en-GB', { timeZone: 'UTC' }) %></td>
+                <td><%= item.originalName %></td>
+                <td class="collapsing">
+                    <div class="ui buttons">
+                        <button onclick="playClip('<%= item.path %>')" class="ui button blue">Play</button>
+                        <div class="or"></div>
+                        <a href="<%= item.path %>" download="<%= item.originalName %>"
+                            class="ui positive button">Save</a>
+                    </div>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+
+    <script>
+        function record(element) {
+            $(element).addClass('loading')
+            let sec = $('#seconds').val();
+            sendCommand('0xMI', { sec }, (error, message) => {
+                if (error) {
+                    setTimeout(() => {
+                        showNotification('#f03434', error)
+                        $(element).removeClass('loading')
+                    }, 300)
+                } else {
+                    setTimeout(() => {
+                        $(element).removeClass('loading');
+
+                        let timeLeft = ((parseInt(sec) + 15) * 1000);
+                        let timeItsGonnaTake = (parseInt(sec) + 10);
+
+                        if (message === 'Requested') {
+                            showNotification('#2ecc71', 'Now Recording, Check back in ' + timeItsGonnaTake + ' ish Seconds for the result!');
+                            let cdInterval = setInterval(() => {
+                                timeLeft = timeLeft - 100;
+                                let percent = (((timeItsGonnaTake * 1000) * 100) / timeLeft) - 100;
+                                $('#recProg').progress({ percent });
+                                if (percent > 100) window.location = window.location;
+                            }, 100)
+                        } else showNotification('#2ecc71', message);
+                    }, 300)
+                }
+            });
+        }
+    </script>
+
+</div>

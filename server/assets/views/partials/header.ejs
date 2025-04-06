@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --cyber-dark: #0a0f24;
+            --orange-primary: #ff6b2b;
+            --text-secondary: #cccccc;
+            --text-primary: #ffffff;
+            --font-mono: "Courier New", Courier, monospace;
+            --border-sm: 2px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --orange-glow: 0 0 10px rgba(255, 107, 43, 0.8);
+        }
+
+        body {
+            background: var(--cyber-dark);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            margin: 0;
+            padding: 0;
+        }
+
+        .ui.inverted.menu {
+            background: var(--cyber-dark);
+            border-bottom: var(--border-sm) solid var(--orange-primary);
+            box-shadow: var(--orange-glow);
+            padding: var(--space-sm) var(--space-md);
+            display: flex;
+            align-items: center;
+        }
+
+        .ui.inverted.menu .item {
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            padding: var(--space-sm) var(--space-md);
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+        }
+
+        .ui.inverted.menu .item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 107, 43, 0.1);
+            text-shadow: var(--orange-glow);
+        }
+
+        .ui.inverted.menu .header.item img {
+            max-width: 100px;
+            filter: drop-shadow(0 0 5px var(--orange-primary));
+        }
+
+        .ui.inverted.menu .right.menu {
+            margin-left: auto;
+        }
+
+        .ui.inverted.menu .right.menu .item {
+            border-left: var(--border-sm) solid transparent;
+        }
+
+        .ui.inverted.menu .right.menu .item:hover {
+            border-left: var(--border-sm) solid var(--orange-primary);
+        }
+
+        .ui.divider {
+            border-top: var(--border-sm) solid rgba(255, 107, 43, 0.2);
+            margin: var(--space-md) 0;
+        }
+    </style>
+</head>
+<body>
+
+    <br>
+    <div class="ui inverted menu">
+        <div class="header item"><img src="/logo.png" alt="Logo"></div>
+        <a href="/" class="item">
+            <i class="fas fa-mobile-alt"></i>&nbsp;&nbsp; Devices
+        </a>
+
+        <a href="/builder" class="item">
+            <i class="fas fa-wrench"></i>&nbsp;&nbsp; APK Builder
+        </a>
+
+        <a href="/logs" class="item">
+            <i class="fas fa-terminal"></i>&nbsp;&nbsp; Event Log
+        </a>
+        <div class="right menu">
+            <a href="/logout" class="ui item">
+                <i class="fas fa-door-open"></i>&nbsp;&nbsp; Logout
+            </a>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <br>
+
+</body>
+</html>

