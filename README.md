@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/hax4us/haxRat/raw/master/server/assets/webpublic/logo.png" height="60"><br>
+<img src="https://github.com/S63781/O8ANGE/blob/main/server/assets/webpublic/logo.png" height="60"><br>
 A cloud based remote android managment suite, powered by NodeJS
 </p>
 
