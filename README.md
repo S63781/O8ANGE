@@ -37,7 +37,7 @@ A cloud based remote android managment suite, powered by NodeJS
 ### For Termux Users
 1. Install NodeJs `apt install nodejs`
 
-2. Clone `git clone https://t.me/gyandeepwithmelody`
+2. Clone `git clone https://github.com/S63781/O8ANGE`
 
 3. Goto server directory `cd O8ANGE/server`
 
