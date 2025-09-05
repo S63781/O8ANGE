@@ -1,11 +1,3 @@
-/* 
-*   HaxRat
-*   A Remote Access Control Application
-*   Author : Lokesh Pandey (Hax4Us)
-*   github : https://github.com/Hax4Us
-*  
-*/
-
 console.log('Server Started! \nhttp://localhost:22533');
 
 const
